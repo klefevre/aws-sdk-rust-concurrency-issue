@@ -29,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
                 let response = s3_client
                     .get_object()
                     .bucket(&*bucket_name)
-                    .key(format!("{object_id}.txt"))
+                    .key(format!("subfolder/{object_id}.txt"))
                     .send()
                     .await
                     .with_context(|| format!("Failed to fetch object {object_id}"))?;
