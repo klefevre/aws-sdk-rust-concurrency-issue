@@ -6,7 +6,7 @@ use futures::{StreamExt as _, TryStreamExt as _};
 use tracing::{info, trace};
 
 const CONCURRENCY_LIMIT: usize = 500;
-const RANGE: Range<u32> = 17_000_000..17_002_000;
+const RANGE: Range<u32> = 1..1_000_000;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
