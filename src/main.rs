@@ -3,12 +3,15 @@ use std::{env, sync::Arc};
 
 use anyhow::Context as _;
 use futures::{StreamExt as _, TryStreamExt as _};
+use tracing::{info, trace};
 
 const CONCURRENCY_LIMIT: usize = 500;
 const RANGE: Range<u32> = 17_000_000..17_002_000;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
     dotenv::dotenv().ok();
 
     let aws_config = aws_config::load_from_env().await;
@@ -43,12 +46,13 @@ async fn main() -> anyhow::Result<()> {
         })
         .buffered(CONCURRENCY_LIMIT)
         .inspect_ok(|(object_id, object_bytes)| {
-            println!("Fetched {object_id}, bytes.len: {}", object_bytes.len())
+            trace!("Fetched {object_id}, bytes.len: {}", object_bytes.len())
         })
         .try_collect::<Vec<_>>()
-        .await?;
+        .await
+        .context("Failed to collect objects")?;
 
-    println!("results: {results:?}");
+    info!("results: {results:?}");
 
     Ok(())
 }
